@@ -1,0 +1,12 @@
+---
+- name: Install tools
+  ansible.builtin.import_tasks: tool_setup.yml
+
+- name: Prepare machine
+  ansible.builtin.import_tasks: prepare_dependancies.yml
+
+- name: Setup database
+  ansible.builtin.import_tasks: database_setup.yml
+
+- name: Setup credentials
+  ansible.builtin.import_tasks: credentials_setup.yml

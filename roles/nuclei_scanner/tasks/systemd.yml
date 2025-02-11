@@ -1,0 +1,35 @@
+---
+- name: Copy over files for all types of scans
+  ansible.builtin.include_tasks: ./systemd_setup.yml
+  loop_control:
+    loop_var: item
+  loop:
+    - type: scheduled
+      timer_started: true
+      persistent: "false"
+      calendar:
+        - Mon *-*-* 4/1:00:00
+        - Tue..Wed *-*-* 0/1:00:00
+        - Thu *-*-* 00..12:00:00 # should be done by Friday 9:00
+    - type: latest
+      timer_started: true
+      persistent: "true"
+      calendar:
+        - Mon 15:00
+    - type: testing
+      timer_started: false
+      persistent: "false"
+      calendar:
+        - 2003-03-05 05:40 # trigger manually
+
+- name: Copy stop disable service
+  ansible.builtin.template:
+    src: disable-scan-timer@.service.j2
+    dest: /etc/systemd/system/nuclei-disable-scan-timer@.service
+    owner: root
+    group: root
+    mode: g=r,o=r
+
+- name: Reload systemd daemon
+  ansible.builtin.systemd:
+    daemon_reload: true

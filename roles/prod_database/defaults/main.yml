@@ -1,0 +1,5 @@
+---
+prod_database_user: "postgres"
+prod_database_db: "postgres"
+prod_database_path: "/opt/db"
+prod_database_system_user: "ubuntu"

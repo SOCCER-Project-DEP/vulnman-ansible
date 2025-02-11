@@ -1,0 +1,61 @@
+- name: Copy add_docker_gpg.sh
+  ansible.builtin.copy:
+    src: "add_docker_gpg.sh"
+    dest: "/tmp/add_docker_gpg.sh"
+    mode: "0755"
+
+- name: Run add_docker_gpg.sh
+  ansible.builtin.command:
+    cmd: "bash /tmp/add_docker_gpg.sh"
+    creates: "/etc/apt/keyrings/docker.asc"
+
+- name: Update apt-get repo and cache
+  ansible.builtin.apt:
+    update_cache: true
+    force_apt_get: true
+
+- name: Unistall old prerequisites
+  ansible.builtin.apt:
+    name: "{{ item }}"
+    state: absent
+  loop:
+    - containerd
+    - docker.io
+    - docker-compose
+    - docker-compose-v2
+    - docker-doc
+    - podman-dockerdocker
+    - docker-compose
+    - runc
+
+- name: Install prerequisites
+  ansible.builtin.apt:
+    name: "{{ item }}"
+    state: present
+  loop:
+    - zip
+    - docker-ce
+    - docker-ce-cli
+    - containerd.io
+    - docker-buildx-plugin
+    - docker-compose-plugin
+
+- name: Wait until /var/run/docker.sock is available
+  ansible.builtin.wait_for:
+    path: /var/run/docker.sock
+    state: present
+    timeout: 30
+
+- name: Wait 2 seconds
+  ansible.builtin.wait_for:
+    timeout: 2
+
+- name: Enable and start docker service
+  ansible.builtin.systemd:
+    name: docker
+    enabled: true
+    state: started
+
+- name: Check if docker compose is installed
+  ansible.builtin.command: "docker compose version"
+  changed_when: false

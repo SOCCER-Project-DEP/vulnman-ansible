@@ -1,0 +1,37 @@
+---
+- name: Install poetry
+  ansible.builtin.shell:
+    cmd: |
+      set -o pipefail
+      curl -sSL https://install.python-poetry.org | python3 -
+    creates: /home/{{ common_setup_non_root_user }}/.local/bin/poetry
+    executable: /bin/bash
+  become: false
+  become_user: "{{ common_setup_non_root_user }}"
+
+- name: Add poetry to PATH
+  ansible.builtin.lineinfile:
+    path: /home/{{ common_setup_non_root_user }}/.bashrc
+    line: export PATH="$PATH:$HOME/.local/bin"
+    create: true
+    owner: "{{ common_setup_non_root_user }}"
+    group: "{{ common_setup_non_root_user }}"
+    mode: "u=rw,g=r,o="
+  loop:
+    - .bashrc
+    - .zshrc
+
+- name: Create symlink to /usr/bin/poetry
+  ansible.builtin.file:
+    src: /home/{{ common_setup_non_root_user }}/.local/bin/poetry
+    dest: /usr/bin/poetry
+    state: link
+  become: true
+
+- name: Copy send-notification script
+  ansible.builtin.copy:
+    src: send-notification.sh
+    dest: /usr/bin/send-notification
+    mode: "0755"
+    owner: root
+    group: root

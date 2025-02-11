@@ -1,0 +1,57 @@
+---
+- name: Check if repo directory exists
+  ansible.builtin.stat:
+    path: /opt/dd
+  register: repo_dir
+
+- name: Clone repo if not present
+  ansible.builtin.git:
+    repo: https://github.com/SOCCER-Project-DEP/vulnman-domain-discovery.git
+    dest: /opt/dd
+  when: not repo_dir.stat.exists
+  tags:
+    - skip_ansible_lint
+
+- name: Change owner to {{ domain_discovery_nonroot_user }}
+  ansible.builtin.file:
+    path: /opt/dd
+    owner: "{{ domain_discovery_nonroot_user }}"
+    group: "{{ domain_discovery_nonroot_user }}"
+    recurse: true
+
+- name: Copy service template
+  ansible.builtin.template:
+    src: domain_discovery.service.j2
+    dest: /etc/systemd/system/domain_discovery.service
+    mode: "0644"
+    owner: root
+    group: root
+
+- name: Copy service timer template
+  ansible.builtin.template:
+    src: domain_discovery.timer.j2
+    dest: /etc/systemd/system/domain_discovery.timer
+    mode: "0644"
+    owner: root
+    group: root
+
+- name: Reload systemd
+  ansible.builtin.systemd:
+    daemon_reload: true
+  tags:
+    - skip_ansible_lint
+
+- name: Start and enable service
+  ansible.builtin.systemd:
+    name: domain_discovery.timer
+    enabled: true
+    state: started
+  when: domain_discovery_enabled_timer
+
+- name: Copy dd2-start script
+  ansible.builtin.template:
+    src: domain_discovery_start.sh.j2
+    dest: /usr/bin/domain_discovery_start
+    mode: "0755"
+    owner: root
+    group: root

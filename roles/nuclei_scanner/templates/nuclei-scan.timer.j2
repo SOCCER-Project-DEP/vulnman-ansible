@@ -1,0 +1,12 @@
+[Unit]
+Description=Timer for nuclei scanning
+
+[Timer]
+{% for c in calendar -%}
+OnCalendar={{ c }}
+{% endfor -%}
+Persistent={{ persistent }}
+Unit=nuclei-{{ type }}.service
+
+[Install]
+WantedBy=default.target

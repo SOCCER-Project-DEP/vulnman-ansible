@@ -1,0 +1,9 @@
+[Unit]
+Description=Timer for domain discovery
+
+[Service]
+Type=exec
+ExecStart=domain_discovery_start
+
+User={{ domain_discovery_nonroot_user }}
+Group={{ domain_discovery_nonroot_user }}

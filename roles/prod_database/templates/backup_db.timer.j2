@@ -1,0 +1,10 @@
+[Unit]
+Description=Timer for database backup service
+
+[Timer]
+# Run daily at 2 AM
+OnCalendar=*-*-* 02:00:00
+Persistent=true
+
+[Install]
+WantedBy=timers.target

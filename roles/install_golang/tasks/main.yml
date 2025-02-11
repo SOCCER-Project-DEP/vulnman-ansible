@@ -1,0 +1,14 @@
+- name: Check if Go is installed
+  ansible.builtin.command: go version
+  register: go_version_cmd
+  changed_when: false
+  ignore_errors: true
+
+- name: Load version into variable
+  ansible.builtin.set_fact:
+    go_version_file: "{{ lookup('file', '/usr/lib/go.version', errors='warn') }}"
+  when: go_version_cmd.rc == 0
+
+- name: Import golang installation
+  ansible.builtin.import_tasks: go.yml
+  when: go_version_cmd.rc != 0 or go_version_file != install_golang_version

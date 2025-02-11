@@ -1,0 +1,16 @@
+- name: Create database domain in database
+  block:
+    - name: Create database domain in database
+      community.general.postgresql_db:
+        name: "{{ domain_discovery_db_name }}"
+        login_user: postgres
+        login_password: "{{ db_pass }}"
+        login_host: localhost
+        state: present
+      register: db_domain
+  rescue:
+    # Database exists but has '-' in the name, postgresql_db module will explode
+    - name: Catch error with db creation
+      ansible.builtin.debug:
+        msg: "If last command failed, it is because the database already exists"
+      failed_when: db_domain.msg.find('Database query failed') == -1

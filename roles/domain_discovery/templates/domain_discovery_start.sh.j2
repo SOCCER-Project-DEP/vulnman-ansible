@@ -1,0 +1,41 @@
+#!/bin/bash
+
+set -euo pipefail
+
+send-notification "Domain Discovery" "Starting a new scan"
+
+onexit() {
+    if [ $? -ne 0 ]; then
+        send-notification "**Domain Discovery**" "**Failed** 🚩"
+        exit 1
+    fi
+
+}
+
+load_stats() {
+    stats_file="/opt/dd/stats.json"
+    old_domain_count=$(jq -r '.old_domains' $stats_file)
+    new_domain_count=$(jq -r '.new_domains' $stats_file)
+
+    echo "old domains: $old_domain_count, new domains: $new_domain_count"
+
+}
+
+trap onexit EXIT
+
+cd /opt/dd
+
+# Virtual environment
+python3 -m venv venv
+source venv/bin/activate
+
+# Setup is dependent on these packages
+pip install poetry click
+
+# Run prescan (poetry independent)
+python3 dd2.py --prescan
+
+# Run scan (poetry dependent)
+poetry run python dd2.py --scan --target={{ domain_discovery_target }}
+
+send-notification "**Domain Discovery**" "**Success** ✨ | $(load_stats)"

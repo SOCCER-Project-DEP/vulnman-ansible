@@ -1,0 +1,22 @@
+- name: Check if db_pass file exists
+  ansible.builtin.stat:
+    path: "{{ prod_database_creds_path }}/db_pass"
+  register: db_pass_file
+
+- name: Exit if db_pass file does not exist
+  ansible.builtin.fail:
+    msg: "db_pass file does not exist"
+  when: not db_pass_file.stat.exists
+
+- name: Read db_pass file
+  ansible.builtin.slurp:
+    src: "{{ prod_database_creds_path }}/db_pass"
+  register: db_pass_file
+
+- name: Set db_pass variable
+  ansible.builtin.set_fact:
+    db_pass: "{{ db_pass_file.content | b64decode | string }}"
+
+- name: Print db_pass
+  ansible.builtin.debug:
+    msg: "Database password: {{ db_pass }}"

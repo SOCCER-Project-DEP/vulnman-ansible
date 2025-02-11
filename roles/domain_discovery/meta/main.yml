@@ -1,0 +1,5 @@
+---
+dependencies:
+  - role: prod_database
+  - role: prod_database_creds
+  - role: prod_database_roles

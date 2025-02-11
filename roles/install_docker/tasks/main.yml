@@ -1,0 +1,9 @@
+- name: Check if docker compose version is installed
+  ansible.builtin.command: "docker compose version"
+  register: docker_compose_version
+  changed_when: false
+  ignore_errors: true
+
+- name: Include docker tasks
+  ansible.builtin.include_tasks: docker.yml
+  when: docker_compose_version.rc != 0

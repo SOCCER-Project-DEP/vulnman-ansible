@@ -1,0 +1,6 @@
+---
+domain_discovery_db_name: scan-db
+domain_discovery_db_conn_str: "postgresql://postgres:{{ db_pass | default('<DB_PASS>') }}@localhost:5432/{{ domain_discovery_db_name }}"
+domain_discovery_nonroot_user: ubuntu
+domain_discovery_enabled_timer: false
+domain_discovery_target: null # changeme

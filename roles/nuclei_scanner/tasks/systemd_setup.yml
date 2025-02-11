@@ -1,0 +1,28 @@
+---
+- name: Copy the files over
+  vars:
+    type: "{{ item.type }}"
+    persistent: "{{ item.persistent }}"
+    calendar: "{{ item.calendar }}"
+  block:
+    - name: Copy systemd service
+      ansible.builtin.template:
+        src: nuclei-scan.timer.j2
+        dest: /etc/systemd/system/nuclei-{{ item.type }}.timer
+        owner: root
+        group: root
+        mode: g=r,o=r
+
+    - name: Copy systemd timer
+      ansible.builtin.template:
+        src: nuclei-scan.service.j2
+        dest: /etc/systemd/system/nuclei-{{ item.type }}.service
+        owner: root
+        group: root
+        mode: g=r,o=r
+
+    - name: Start systemd timer
+      ansible.builtin.systemd:
+        name: nuclei-{{ item.type }}.timer
+        state: started
+      when: item.timer_started and nuclei_scanner_start_nuclei

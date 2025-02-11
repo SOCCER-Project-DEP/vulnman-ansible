@@ -1,0 +1,10 @@
+---
+- name: Running role
+  hosts: scanners
+  become: true
+  vars:
+  roles:
+    - common_setup
+    - prod_database
+    - domain_discovery
+    - nuclei_scanner

@@ -1,0 +1,64 @@
+---
+- name: Install nuclei
+  ansible.builtin.command: "go install -v github.com/projectdiscovery/nuclei/v2/cmd/nuclei@latest"
+  become_user: "{{ nuclei_scanner_nonroot_user }}"
+  tags:
+    - skip_ansible_lint
+
+- name: Add golang package directory to PATH
+  ansible.builtin.lineinfile:
+    path: /home/{{ nuclei_scanner_nonroot_user }}/.profile
+    line: export PATH="$PATH:{{ nuclei_scanner_go_packages_path }}"
+
+- name: Install nuclei templates
+  ansible.builtin.command: "{{ nuclei_scanner_go_packages_path }}/nuclei -update-templates"
+  tags:
+    - skip_ansible_lint
+
+- name: Remove existing nuclei repository
+  ansible.builtin.file:
+    path: /home/{{ nuclei_scanner_nonroot_user }}/vulnman-nuclei
+    state: absent
+
+- name: Clone repository
+  ansible.builtin.git:
+    repo: https://github.com/SOCCER-Project-DEP/vulnman-nuclei-orchestrator.git
+    dest: /home/{{ nuclei_scanner_nonroot_user }}/vulnman-nuclei
+    version: "{{ nuclei_scanner_nuclei_git_branch }}"
+  tags:
+    - skip_ansible_lint
+
+- name: Change owner to {{ nuclei_scanner_nonroot_user }}
+  ansible.builtin.file:
+    path: /home/{{ nuclei_scanner_nonroot_user }}
+    owner: "{{ nuclei_scanner_nonroot_user }}"
+    group: "{{ nuclei_scanner_nonroot_user }}"
+    recurse: true
+
+- name: Install vulnman-nuclei # noqa: no-changed-when
+  ansible.builtin.command:
+    cmd: poetry install
+    chdir: /home/{{ nuclei_scanner_nonroot_user }}/vulnman-nuclei
+  become: true
+  become_user: "{{ nuclei_scanner_nonroot_user }}"
+
+- name: Create symlink to nuclei
+  ansible.builtin.file:
+    src: /home/{{ nuclei_scanner_nonroot_user }}/go/bin/nuclei
+    dest: /usr/bin/nuclei
+    state: link
+
+- name: Create a nuclei logging dirs
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: directory
+    owner: "{{ nuclei_scanner_nonroot_user }}"
+    group: "{{ nuclei_scanner_nonroot_user }}"
+    mode: u=rwx,g=rx,o=
+  become: true
+  loop:
+    - /var/log/orchs_nuclei/logs/
+    - /var/log/orchs_nuclei/results/scheduled
+    - /var/log/orchs_nuclei/results/adhoc
+    - /var/log/orchs_nuclei/results/latest
+    - /var/log/orchs_nuclei/results/testing
