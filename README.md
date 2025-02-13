@@ -79,4 +79,4 @@ To enable periodic scanning, enable following systemd timers:
 ## Help
 
 Are you missing something? Do you have any suggestions or problems? Please create an issue, or
-ask us at `info@csirt.muni.cz`. We are happy to help you, answer your questions, or discuss your ideas.
+ask us at `csirt-info@muni.cz`. We are happy to help you, answer your questions, or discuss your ideas.
