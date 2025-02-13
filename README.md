@@ -66,7 +66,7 @@ psql -U postgres -h localhost -d scan-db -c "SELECT * FROM findings"
 
 ## Continuous scanning
 
-To enable periodic scanning, enable following systemd timers:
+To enable periodic scanning, (optionally reconfigure) and enable following systemd timers:
 - `sudo systemctl enable domain_discovery.timer`
 - `sudo systemctl enable nuclei-scheduled.timer`
 
