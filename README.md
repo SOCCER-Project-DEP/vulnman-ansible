@@ -7,14 +7,14 @@ This repository contains Ansible playbooks and roles to automate deploy of [vulm
 1. The Ansible playbook installs all necessary dependencies on the target machine.
 2. You run domain_dicovery, which takes a **target** domain and tries to find as many subdomains/IP addresses and their ports as possible.
 3. You run nuclei-scheduled, which takes a **config file** and scans all the subdomains/IP addresses and their ports for vulnerabilities.
-4. The results are stored in a PostgreSQL database. You can view them using `psql` or any other PostgreSQL client. Optionally, you can send the results to GitLab repository, which will create issues for each finding. The tool handles duplicate issues.
+4. The results are stored in a PostgreSQL database. You can view them using `psql` or any other PostgreSQL client. Optionally, you can send the results to the GitLab repository, which will create issues for each finding. The tool handles duplicate issues.
 
 ## Requirements
 
 Ansible is meant to run on clean Ubuntu and other distributions have not been tested. 
-This Ansible is directly dependent on APT package manager and will not work on other package managers.
+This Ansible depends on the APT package manager and will not work on other package managers.
 
-If you do not have clean Ubuntu machine, you can use Vagrant to create one using VirtualBox.
+If you do not have a clean Ubuntu machine, you can use Vagrant to create one using VirtualBox.
 
 ```bash
 # Install VirtualBox and Vagrant
@@ -73,10 +73,11 @@ To enable periodic scanning, enable following systemd timers:
 ## Additional information
 
 - This repository is being developed as a part of the [SOCCER](https://soccer.agh.edu.pl/en/) project.
-- Developed by cybersecurity team of [Masaryk University](https://www.muni.cz/en). 
+- Developed by the cybersecurity team of [Masaryk University](https://www.muni.cz/en). 
 - This project is a "mirror" of the original repository hosted on university Gitlab. New features and fixes here are being added upon new releases of the original repository.
 
 ## Help
 
-Are you missing something? Do you have any suggestions or problems? Please create an issue, or
-ask us at `csirt-info@muni.cz`. We are happy to help you, answer your questions, or discuss your ideas.
+Are you missing something? Do you have any suggestions or problems? Please create an issue.
+Or ask us at `csirt-info@muni.cz`; we are happy to help you, answer your questions, or discuss your ideas.
+
