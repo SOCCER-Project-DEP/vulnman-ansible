@@ -20,9 +20,13 @@ If you do not have a clean Ubuntu machine, you can use Vagrant to create one usi
 # Install VirtualBox and Vagrant
 # Then run the following commands
 vagrant up --provision
-# Run the Ansible playbook to deploy everything on the Vagrant machine
-ansible-playbook -i inventory-vagrant.yml playbooks/deploy-all.yml
+# Run the Ansible playbook to deploy everything on the Vagrant machine 
+ansible-playbook -i inventory-vagrant.yml playbooks/deploy-all.yml # -kK for password prompt
 ```
+
+VulnMan is tested on:
+- Distro: `Ubuntu 22.04.5 LTS`
+- Kernel: `5.15.0-127-generic`
 
 ## Usage
 
@@ -34,13 +38,13 @@ nano inventory.yml  # Edit and save
 nano roles/domain_discovery/defaults/main.yml  # Update 'target'
 
 # Run the Ansible playbook to deploy everything
-ansible-playbook -i inventory.yml playbooks/deploy-all.yml
+ansible-playbook -i inventory.yml playbooks/deploy-all.yml # -kK for password prompt
 
 # Connect to the machine and populate the database with subdomains
-ssh <your_machine> # Or 'vagrant ssh' if you are using Vagrant, and do not forget to switch to user 'ubuntu'
+ssh <your_machine> # Or 'vagrant ssh' if you are using Vagrant
 sudo systemctl start domain_discovery.service
 # Wait for the discovery to finish
-# sudo systemctl status domain_discovery.service
+# sudo journalctl -u domain_discovery.service --follow
 
 # Load the database password for psql client
 export PGPASSWORD=$(cat /opt/db/db_pass)
