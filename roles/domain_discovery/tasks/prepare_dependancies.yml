@@ -25,8 +25,9 @@
 
 - name: Install bbot
   ansible.builtin.shell: |
-    export UV_TOOL_BIN_DIR=/usr/local/bin \
     uv tool install bbot
+  environment: 
+    UV_TOOL_BIN_DIR: /usr/local/bin
   ignore_errors: true
 
 - name: Install bbot dependencies
