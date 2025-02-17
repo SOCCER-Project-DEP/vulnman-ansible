@@ -17,12 +17,30 @@
     - libpq-dev
     - postgresql-client
     - python3-click
+    - pipx
 
-- name: Install bbot via pip
-  ansible.builtin.pip:
-    name: bbot
-    state: present
+- name: Create pipx directory
+  ansible.builtin.file:
+    path: /opt/pipx
+    state: directory
+    owner: root
+    group: root
+    mode: 0755
+
+- name: Install bbot via pipx
+  ansible.builtin.shell: |
+    PIPX_HOME=/opt/pipx \
+    PIPX_BIN_DIR=/usr/local/bin \
+    pipx install bbot
+  changed_when: false
 
 - name: Install bbot dependencies
   ansible.builtin.command: "bbot --install-all-deps"
   changed_when: false
+
+- name: Check if bbot is installed
+  ansible.builtin.command: "bbot --version"
+  become: false
+  become_user: "{{ domain_discovery_nonroot_user }}"
+  register: bbot_version
+  failed_when: bbot_version.rc != 0

@@ -57,8 +57,8 @@
     mode: u=rwx,g=rx,o=
   become: true
   loop:
-    - /var/log/orchs_nuclei/logs/
-    - /var/log/orchs_nuclei/results/scheduled
-    - /var/log/orchs_nuclei/results/adhoc
-    - /var/log/orchs_nuclei/results/latest
-    - /var/log/orchs_nuclei/results/testing
+    - /var/log/vulnman_nuclei/logs/
+    - /var/log/vulnman_nuclei/results/scheduled
+    - /var/log/vulnman_nuclei/results/adhoc
+    - /var/log/vulnman_nuclei/results/latest
+    - /var/log/vulnman_nuclei/results/testing
