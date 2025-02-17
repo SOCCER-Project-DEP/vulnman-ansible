@@ -19,10 +19,14 @@
     - python3-click
 
 - name: Install uv
-  ansible.builtin.shell: "curl -LsSf https://astral.sh/uv/install.sh | env UV_INSTALL_DIR='/usr/local/bin' sh"
+  ansible.builtin.shell: |
+    curl -LsSf https://astral.sh/uv/install.sh | \
+    env UV_INSTALL_DIR='/usr/local/bin' sh
 
 - name: Install bbot
-  ansible.builtin.shell: "uv tool install bbot"
+  ansible.builtin.shell: |
+    export UV_TOOL_BIN_DIR=/usr/local/bin \
+    uv tool install bbot
   ignore_errors: true
 
 - name: Install bbot dependencies
