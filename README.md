@@ -20,8 +20,8 @@ If you do not have a clean Ubuntu machine, you can use Vagrant to create one usi
 # Install VirtualBox and Vagrant
 # Then run the following commands
 vagrant up --provision
-# Run the Ansible playbook to deploy everything on the Vagrant machine 
-ansible-playbook -i inventory-vagrant.yml playbooks/deploy-all.yml # -kK for password prompt
+# Run the Ansible playbook to deploy everything on the Vagrant machine ; SEE BELOW
+# USE THIS INVENTORY: -i inventory-vagrant.yml 
 ```
 
 VulnMan is tested on:
@@ -34,11 +34,8 @@ VulnMan is tested on:
 # Update the inventory file with the scanner machine IP
 nano inventory.yml  # Edit and save
 
-# Set the target domain in the configuration file
-nano roles/domain_discovery/defaults/main.yml  # Update 'target'
-
 # Run the Ansible playbook to deploy everything
-ansible-playbook -i inventory.yml playbooks/deploy-all.yml # -kK for password prompt
+ansible-playbook -i inventory.yml playbooks/deploy-all.yml -e "target=<YOUR-DOMAIN>" # -kK for password prompt
 
 # Connect to the machine and populate the database with subdomains
 ssh <your_machine> # Or 'vagrant ssh' if you are using Vagrant
