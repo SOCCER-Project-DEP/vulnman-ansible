@@ -17,15 +17,22 @@
     - libpq-dev
     - postgresql-client
     - python3-click
-    - pipx
 
-- name: Install bbot via pipx
-  ansible.builtin.shell: pipx ensurepath 
+- name: Install pipx
+  ansible.builtin.pip:
+    name: pipx
+    state: present
   ignore_errors: true
 
-- name: Install bbot via pipx
-  ansible.builtin.shell: pipx install bbot
+- name: Install pipx with --break-system-packages
+  ansible.builtin.pip:
+    name: pipx
+    state: present
+    extra_args: --break-system-packages
   ignore_errors: true
+
+- name: Run ensurepath
+  ansible.builtin.command: "pipx ensurepath"
 
 - name: Install bbot dependencies
   ansible.builtin.command: "bbot --install-all-deps"
