@@ -18,21 +18,12 @@
     - postgresql-client
     - python3-click
 
-- name: Install pipx
-  ansible.builtin.pip:
-    name: pipx
-    state: present
-  ignore_errors: true
+- name: Install uv
+  ansible.builtin.shell: "curl -LsSf https://astral.sh/uv/install.sh | env UV_INSTALL_DIR='/usr/local/bin' sh"
 
-- name: Install pipx with --break-system-packages
-  ansible.builtin.pip:
-    name: pipx
-    state: present
-    extra_args: --break-system-packages
+- name: Install bbot
+  ansible.builtin.shell: "uv tool install bbot"
   ignore_errors: true
-
-- name: Run ensurepath
-  ansible.builtin.command: "pipx ensurepath"
 
 - name: Install bbot dependencies
   ansible.builtin.command: "bbot --install-all-deps"
