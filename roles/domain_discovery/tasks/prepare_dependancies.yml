@@ -37,6 +37,7 @@
 - name: Install bbot dependencies
   ansible.builtin.command: "bbot --install-all-deps"
   changed_when: false
+  ignore_errors: true
 
 - name: Check if bbot is installed
   ansible.builtin.command: "bbot --version"

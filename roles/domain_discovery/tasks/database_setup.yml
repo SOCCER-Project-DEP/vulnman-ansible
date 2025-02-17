@@ -14,3 +14,4 @@
       ansible.builtin.debug:
         msg: "If last command failed, it is because the database already exists"
       failed_when: db_domain.msg.find('Database query failed') == -1
+  ignore_errors: true
