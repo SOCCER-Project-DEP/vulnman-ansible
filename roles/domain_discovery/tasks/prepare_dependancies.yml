@@ -19,20 +19,13 @@
     - python3-click
     - pipx
 
-- name: Create pipx directory
-  ansible.builtin.file:
-    path: /opt/pipx
-    state: directory
-    owner: root
-    group: root
-    mode: 0755
+- name: Install bbot via pipx
+  ansible.builtin.shell: pipx ensurepath 
+  ignore_errors: true
 
 - name: Install bbot via pipx
-  ansible.builtin.shell: |
-    PIPX_HOME=/opt/pipx \
-    PIPX_BIN_DIR=/usr/local/bin \
-    pipx install bbot
-  changed_when: false
+  ansible.builtin.shell: pipx install bbot
+  ignore_errors: true
 
 - name: Install bbot dependencies
   ansible.builtin.command: "bbot --install-all-deps"
