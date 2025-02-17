@@ -17,18 +17,15 @@
     - libpq-dev
     - postgresql-client
     - python3-click
-
-- name: Install uv
-  ansible.builtin.shell: |
-    curl -LsSf https://astral.sh/uv/install.sh | \
-    env UV_INSTALL_DIR='/usr/local/bin' sh
+    - pipx
 
 - name: Install bbot
   ansible.builtin.shell: |
-    uv tool install bbot
-  environment: 
-    UV_TOOL_BIN_DIR: /usr/local/bin
+    pipx install bbot
   ignore_errors: true
+  environment:
+    PIPX_HOME: /opt/pipx
+    PIPX_BIN_DIR: /usr/local/bin
 
 - name: Install bbot dependencies
   ansible.builtin.command: "bbot --install-all-deps"
