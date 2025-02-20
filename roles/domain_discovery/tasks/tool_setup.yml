@@ -55,3 +55,11 @@
     mode: "0755"
     owner: root
     group: root
+
+- name: Create log directory
+  ansible.builtin.file:
+    path: /var/log/domain_discovery
+    state: directory
+    owner: "{{ domain_discovery_nonroot_user }}"
+    group: "{{ domain_discovery_nonroot_user }}"
+    mode: "0700"
