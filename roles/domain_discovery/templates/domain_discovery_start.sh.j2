@@ -30,7 +30,7 @@ load_stats() {
 trap onexit EXIT
 
 cd /opt/domain_discovery
-
+sudo docker compose -f domain_discovery.compose.yml pull
 sudo docker compose \
     -f domain_discovery.compose.yml \
     --env-file vulnman.env \
