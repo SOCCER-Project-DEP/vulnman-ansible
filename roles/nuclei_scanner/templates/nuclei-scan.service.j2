@@ -5,16 +5,8 @@ OnFailure=nuclei-disable-scan-timer@{{ type }}.service
 [Service]
 Type=exec
 
-WorkingDirectory=/home/ubuntu/vulnman-nuclei/
+WorkingDirectory=/opt/nuclei-orchestrator/
 
-User=ubuntu
-Group=ubuntu
-
-ExecStartPre=git pull
-ExecStartPre=poetry install
-ExecStartPre=nuclei -update 
-ExecStartPre=nuclei -update-templates
 ExecStartPre=send-notification "Nuclei" "Start - {{ type }}"
-
-ExecStart=poetry run nuclei-scan-runner --config ./configs/{{ type }}-config.toml --no-update-nuclei --no-update-templates
+ExecStart=docker compose -f nuclei_orchestrator.compose.yml --env-file vulnman.env up
 ExecStopPost=send-notification "Nuclei" "Stop - {{ type }}"

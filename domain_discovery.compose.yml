@@ -1,0 +1,18 @@
+services:
+  domain_discovery:
+    image: "vulnman/domain-discovery:latest"
+    container_name: domain_discovery
+    entrypoint: poetry run python src/main.py --target ${TARGET} 
+    volumes:
+      - .vulnman_data/domain_discovery_logs:/var/log/domain_discovery
+      - .vulnman_data/stats.json:/vulnman-domain-discovery/stats.json
+    networks:
+      - scan_network
+    env_file:
+      - ./vulnman.env
+
+networks:
+  scan_network:
+    name: scan_network
+    driver: bridge
+    external: true

@@ -1,10 +1,6 @@
 #!/bin/bash
 
-# Modify the script to send a notification 
+# This is placeholder for the send-notification script
+# Set up the script to send notifications to the slack, mattermost, email, etc.
 
-# We send notifications to Mattermost
-
-# This is placeholder code:
-
-ARGS=("$@")
-echo $ARGS > /tmp/send-notification-$(date +%Y%m%d%H%M%S).log
+echo $@ >> send-notification$(date +%s).log

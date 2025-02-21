@@ -5,6 +5,7 @@
   vars:
   roles:
     - common_setup
-    - prod_database
+    - install_docker
+    - setup_postgres
     - domain_discovery
     - nuclei_scanner

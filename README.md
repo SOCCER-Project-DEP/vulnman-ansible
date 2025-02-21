@@ -1,6 +1,6 @@
 # Vulnerability Management (VulnMan) - Ansible
 
-This repository contains Ansible playbooks and roles to automate deploy of [vulman-nuclei-orchestrator](https://github.com/SOCCER-Project-DEP/vulnman-nuclei-orchestrator) and [vulman-domain-discovery](https://github.com/SOCCER-Project-DEP/vulnman-domain-discovery).
+This repository contains Ansible playbooks,roles and docker compose files to automate deploy of [vulman-nuclei-orchestrator](https://github.com/SOCCER-Project-DEP/vulnman-nuclei-orchestrator) and [vulman-domain-discovery](https://github.com/SOCCER-Project-DEP/vulnman-domain-discovery).
 
 ## How it works
 
@@ -14,44 +14,46 @@ This repository contains Ansible playbooks and roles to automate deploy of [vulm
 Ansible is meant to run on clean Ubuntu and other distributions have not been tested. 
 This Ansible depends on the APT package manager and will not work on other package managers.
 
-If you do not have a clean Ubuntu machine, you can use Vagrant to create one using VirtualBox.
+If you do not have a clean Ubuntu machine, you can use docker standalone setup.
+
+## Usage docker
+
+Ansible setup is recommended because it sets up other useful features like systemd timers for continuous scanning.
 
 ```bash
-# Install VirtualBox and Vagrant
-# Then run the following commands
-vagrant up --provision
-# Run the Ansible playbook to deploy everything on the Vagrant machine ; SEE BELOW
-# USE THIS INVENTORY: -i inventory-vagrant.yml 
+# start postgres db
+docker compose -f /opt/postgres_db/postgres.compose.yml up -d
+
+# Run the domain discovery
+docker compose -f domain_discovery.compose.yml --env-file vulnman.env up 
+
+# Run the nuclei orchestrator
+docker compose -f nuclei_orchestrator.compose.yml --env-file vulnman.env up
+
+# Now to setup continuous scanning, create either a systemd timer or a cron job to run domain_discovery and nuclei-scheduled periodically
 ```
 
-VulnMan is tested on:
-- Distro: `Ubuntu 22.04.5 LTS`
-- Kernel: `5.15.0-127-generic`
-
-## Usage
+## Usage ansible
 
 ```bash
 # Update the inventory file with the scanner machine IP
 nano inventory.yml  # Edit and save
-
-# Run the Ansible playbook to deploy everything
-ansible-playbook -i inventory.yml playbooks/deploy-all.yml -e "target=<YOUR-DOMAIN>" # -kK for password prompt
-
-# Connect to the machine and populate the database with subdomains
-ssh <your_machine> # Or 'vagrant ssh' if you are using Vagrant
-sudo systemctl start domain_discovery.service
-# Wait for the discovery to finish
-# sudo journalctl -u domain_discovery.service --follow
-
-# Load the database password for psql client
-export PGPASSWORD=$(cat /opt/db/db_pass)
-# Verify the database is populated
-psql -U postgres -h localhost -d scan-db -c "SELECT name, port FROM domains"
-
-# Review the configuration file for scheduled scans
-nano /home/ubuntu/vulnman-nuclei/configs/scheduled-config.toml
+# Configure the environment file
+nano vulnman.env  # Edit and save
+# Review the configuration file
 # If you do not have GitLab, set:
 # dont-process-results = true
+nano nuclei_orchestrator_configs/scheduled-config.toml  # Edit and save
+
+# Run the Ansible playbook to deploy everything
+ansible-playbook -i inventory.yml playbooks/deploy-all.yml # -kK for password prompt
+
+ssh <your_machine> # Or 'vagrant ssh' if you are using Vagrant
+sudo systemctl start domain_discovery.service
+
+export PGPASSWORD=<YOUR_POSTGRES_PASSWORD>
+
+psql -U postgres -h localhost -d scan-db -c "SELECT name, port FROM domains"
 
 # Start the scanning service
 sudo systemctl start nuclei-scheduled.service

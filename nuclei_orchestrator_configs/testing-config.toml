@@ -1,0 +1,19 @@
+
+# don't waste time
+no-update-templates = false
+no-update-nuclei = false
+
+# targets are specified in nuclei configuration
+dont-query-database = true
+
+# usefull to setup scans, but we don't query the datbase
+# so these have no effect
+number-of-targets = 1
+all = false
+
+dont-mark-targets = true
+dont-process-results = true
+nuclei-config = "./configs/testing-nuclei.yml"
+
+logfile =     "/var/log/vulnman_nuclei/logs/scheduled.ndjson"
+results-dir = "/var/log/vulnman_nuclei/results/scheduled/"

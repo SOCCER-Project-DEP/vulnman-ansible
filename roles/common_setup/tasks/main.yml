@@ -1,3 +1,19 @@
----
-- name: Install common packages
-  ansible.builtin.import_tasks: common_packages.yml
+- name: Update apt cache
+  ansible.builtin.apt:
+    update_cache: true
+    cache_valid_time: 3600
+
+- name: Install required packages
+  ansible.builtin.apt:
+    name: "{{ item }}"
+    state: present
+  with_items:
+    - postgresql-client
+
+- name: Create send-notification binary
+  ansible.builtin.copy:
+    src: send-notification.sh
+    dest: /usr/bin/send-notification
+    mode: "0755"
+    owner: root
+    group: root

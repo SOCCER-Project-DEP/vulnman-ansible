@@ -6,4 +6,4 @@ scanners:
 all:
   hosts:
     scanner_machine_1:
-      ansible_host: <IP>
+      ansible_host: 147.251.125.24

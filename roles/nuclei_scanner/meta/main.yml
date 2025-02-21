@@ -1,5 +1,0 @@
----
-dependencies:
-  - role: install_golang
-  - role: prod_database
-  - role: prod_database_creds

@@ -20,9 +20,3 @@
         owner: root
         group: root
         mode: g=r,o=r
-
-    - name: Start systemd timer
-      ansible.builtin.systemd:
-        name: nuclei-{{ item.type }}.timer
-        state: started
-      when: item.timer_started and nuclei_scanner_start_nuclei
