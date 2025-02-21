@@ -14,6 +14,12 @@ onexit() {
 
 load_stats() {
     stats_file="/opt/domain_discovery/stats.json"
+    # check if the file exists
+    if [ ! -f $stats_file ]; then
+        echo "Could not find stats.json"
+        return
+    fi
+
     old_domain_count=$(jq -r '.old_domains' $stats_file)
     new_domain_count=$(jq -r '.new_domains' $stats_file)
 
