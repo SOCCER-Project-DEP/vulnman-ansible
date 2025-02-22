@@ -7,7 +7,7 @@
 - name: Copy files
   ansible.builtin.copy:
     src: "../../../{{ item }}"
-    dest: /opt/nuclei_scanner/
+    dest: /opt/nuclei-orchestrator/
     mode: "0644"
     owner: root
     group: root

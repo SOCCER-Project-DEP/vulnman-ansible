@@ -46,3 +46,11 @@
     mode: "0755"
     owner: root
     group: root
+
+- name: Create .vulnman_data/stats.json
+  ansible.builtin.file:
+    path: /opt/domain_discovery/.vulnman_data/stats.json
+    state: touch
+    mode: "0644"
+    owner: root
+    group: root
