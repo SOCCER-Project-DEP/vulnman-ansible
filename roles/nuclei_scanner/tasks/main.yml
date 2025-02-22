@@ -14,4 +14,21 @@
   with_items:
     - nuclei_orchestrator.compose.yml
     - vulnman.env
+
+- name: Create directory for nuclei-orchestrator configs
+  ansible.builtin.file:
+    path: /opt/nuclei-orchestrator/nuclei_orchestrator_configs
+    state: directory
+    mode: "0755"
+    owner: root
+    group: root
+
+- name: Copy files
+  ansible.builtin.copy:
+    src: "../../../{{ item }}/"
+    dest: /opt/nuclei-orchestrator/nuclei_orchestrator_configs/
+    mode: "0644"
+    owner: root
+    group: root
+  with_items:
     - nuclei_orchestrator_configs/

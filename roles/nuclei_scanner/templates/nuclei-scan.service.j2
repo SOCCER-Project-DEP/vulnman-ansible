@@ -9,6 +9,5 @@ WorkingDirectory=/opt/nuclei-orchestrator/
 
 ExecStartPre=send-notification "Nuclei" "Start - {{ type }}"
 ExecStartPre=docker compose -f nuclei_orchestrator.compose.yml --env-file vulnman.env pull
-ExecStartPre= export CONFIG_FILE={{ type }}-config.toml
 ExecStart=docker compose -f nuclei_orchestrator.compose.yml --env-file vulnman.env  up
 ExecStopPost=send-notification "Nuclei" "Stop - {{ type }}"
