@@ -16,12 +16,48 @@ This Ansible depends on the APT package manager and will not work on other packa
 
 If you do not have a clean Ubuntu machine, you can use docker standalone setup.
 
-## Usage docker
+## Setup
+
+```bash
+# Create project on GitLab and get new project token with API access and reporter permissions
+# Update the inventory file with the scanner machine IP
+nano inventory.yml  # Edit and save
+# Configure the environment file
+nano vulnman.env  # Edit and save
+# Review the configuration file
+nano nuclei_orchestrator_configs/scheduled-config.toml  # Edit and save
+
+# Run the Ansible playbook to deploy everything
+ansible-playbook -i inventory.yml playbooks/deploy-all.yml # -kK for password prompt
+```
+
+## Usage
+
+```bash
+ssh <your_machine> 
+sudo systemctl start domain_discovery.service
+
+export PGPASSWORD=<YOUR_POSTGRES_PASSWORD>
+
+psql -U postgres -h localhost -d scan-db -c "SELECT name, port FROM domains"
+
+# Start the scanning service
+sudo systemctl start nuclei-scheduled.service
+
+# Check the status of the scanning service
+# sudo journalctl -u nuclei-scheduled.service --follow
+
+# View scan results in the database
+psql -U postgres -h localhost -d scan-db -c "SELECT * FROM findings"
+```
+
+## Setup docker
 
 Ansible setup is recommended because it sets up other useful features like systemd timers for continuous scanning.
 
 ```bash
-# start postgres db
+# Setup configuration files as described above
+# Start postgres db
 docker compose -f /opt/postgres_db/postgres.compose.yml up -d
 
 # Run the domain discovery
@@ -33,39 +69,20 @@ docker compose -f nuclei_orchestrator.compose.yml --env-file vulnman.env up
 # Now to setup continuous scanning, create either a systemd timer or a cron job to run domain_discovery and nuclei-scheduled periodically
 ```
 
-## Usage ansible
+## Configuration
 
+Both domain_discovery and nuclei-scheduled can be configured using cli arguments or configuration files.
+
+To see all available options, run the tools with the `--help` flag.
 ```bash
-# Update the inventory file with the scanner machine IP
-nano inventory.yml  # Edit and save
-# Configure the environment file
-nano vulnman.env  # Edit and save
-# Review the configuration file
-# If you do not have GitLab, set:
-# dont-process-results = true
-nano nuclei_orchestrator_configs/scheduled-config.toml  # Edit and save
-
-# Run the Ansible playbook to deploy everything
-ansible-playbook -i inventory.yml playbooks/deploy-all.yml # -kK for password prompt
-
-ssh <your_machine> # Or 'vagrant ssh' if you are using Vagrant
-sudo systemctl start domain_discovery.service
-
-export PGPASSWORD=<YOUR_POSTGRES_PASSWORD>
-
-psql -U postgres -h localhost -d scan-db -c "SELECT name, port FROM domains"
-
-# Start the scanning service
-sudo systemctl start nuclei-scheduled.service
-
-# Check the status of the scanning service
-# sudo systemctl status nuclei-scheduled.service
-
-# View scan results in the database
-psql -U postgres -h localhost -d scan-db -c "SELECT * FROM findings"
-# Consider setting up a some kind of GUI service to view the results in the DB like pgAdmin
-# By default, results are sent to GitLab, but you can configure a GUI service for easier browsing.
+# nuclei-orchestrator
+sudo docker run -it --entrypoint sh vulnman/nuclei-orchestrator:latest
+poetry run nuclei-scan-runner -h
+# domain_discovery
+docker run -it vulnman/domain-discovery poetry run python src/main.py --help
 ```
+
+
 
 ## Continuous scanning
 
