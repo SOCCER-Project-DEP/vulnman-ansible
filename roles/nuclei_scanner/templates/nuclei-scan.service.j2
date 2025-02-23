@@ -6,6 +6,7 @@ OnFailure=nuclei-disable-scan-timer@{{ type }}.service
 Type=exec
 
 WorkingDirectory=/opt/nuclei-orchestrator/
+Environment="CONFIG_FILE={{ type }}-config.toml"
 
 ExecStartPre=send-notification "Nuclei" "Start - {{ type }}"
 ExecStartPre=docker compose -f nuclei_orchestrator.compose.yml --env-file vulnman.env pull
