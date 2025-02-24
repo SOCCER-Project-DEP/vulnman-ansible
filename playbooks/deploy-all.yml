@@ -4,7 +4,7 @@
   become: true
   vars:
   roles:
-    - common_setup
+    - vulnman_common_setup
     - install_docker
     - setup_postgres
     - domain_discovery

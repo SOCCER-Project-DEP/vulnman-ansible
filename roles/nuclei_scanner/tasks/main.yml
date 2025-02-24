@@ -7,7 +7,7 @@
 - name: Copy files
   ansible.builtin.copy:
     src: "../../../{{ item }}"
-    dest: /opt/nuclei-orchestrator/
+    dest: /opt/nuclei_orchestrator/
     mode: "0644"
     owner: root
     group: root
@@ -17,7 +17,7 @@
 
 - name: Create directory for nuclei-orchestrator configs
   ansible.builtin.file:
-    path: /opt/nuclei-orchestrator/nuclei_orchestrator_configs
+    path: /opt/nuclei_orchestrator/nuclei_orchestrator_configs
     state: directory
     mode: "0755"
     owner: root
@@ -26,9 +26,17 @@
 - name: Copy files
   ansible.builtin.copy:
     src: "../../../{{ item }}/"
-    dest: /opt/nuclei-orchestrator/nuclei_orchestrator_configs/
+    dest: /opt/nuclei_orchestrator/nuclei_orchestrator_configs/
     mode: "0644"
     owner: root
     group: root
   with_items:
     - nuclei_orchestrator_configs/
+
+- name: Copy nuclei_orchestrator script
+  ansible.builtin.template:
+    src: nuclei_orchestrator_start.sh.j2
+    dest: /usr/bin/nuclei_orchestrator_start
+    mode: "0755"
+    owner: root
+    group: root

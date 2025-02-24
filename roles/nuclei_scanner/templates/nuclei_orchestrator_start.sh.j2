@@ -1,0 +1,28 @@
+#!/bin/bash
+
+set -euo pipefail
+
+
+onexit() {
+    if [ $? -ne 0 ]; then
+    send-notification "Nuclei"$SCAN_TYPE "Failed 🚩"
+        exit 1
+    fi
+
+}
+
+trap onexit EXIT
+
+if [ -z "$SCAN_TYPE" ]; then
+    echo "SCAN_TYPE variable is not set, exiting"
+    exit 1
+fi
+
+send-notification "Nuclei" "Start -$SCAN_TYPE"
+
+cd /opt/nuclei_orchestrator
+
+docker compose -f nuclei_orchestrator.compose.yml --env-file vulnman.env pull
+docker compose -f nuclei_orchestrator.compose.yml --env-file vulnman.env  up
+
+send-notification "Nuclei" "Stop -$SCAN_TYPE"

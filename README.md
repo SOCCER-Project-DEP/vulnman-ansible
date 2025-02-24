@@ -47,6 +47,8 @@ ansible-playbook -i inventory.yml playbooks/deploy-all.yml # -kK for password pr
 ```bash
 ssh <your_machine> 
 sudo systemctl start domain_discovery.service
+# Or if you want to run it manually
+# sudo domain_discovery_start
 
 export PGPASSWORD=<YOUR_POSTGRES_PASSWORD>
 
@@ -54,6 +56,8 @@ psql -U postgres -h localhost -d scan-db -c "SELECT name, port FROM domains"
 
 # Start the scanning service
 sudo systemctl start nuclei-scheduled.service
+# Or if you want to run it manually
+# sudo SCAN_TYPE=scheduled nuclei_orchestrator_start 
 
 # Check the status of the scanning service
 # sudo journalctl -u nuclei-scheduled.service --follow
