@@ -14,7 +14,13 @@ This repository contains Ansible playbooks,roles and docker compose files to aut
 Ansible is meant to run on clean Ubuntu and other distributions have not been tested. 
 This Ansible depends on the APT package manager and will not work on other package managers.
 
-If you do not have a clean Ubuntu machine, you can use docker standalone setup.
+If you do not have a clean Ubuntu machine, you can use [Docker setup](#setup-docker) instead.
+This is not recommended because system won't be able to use systemd timers for continuous scanning.
+But it is useful for trying out the tool.
+
+Furthermore, you need to have [Ansible](https://docs.ansible.com/ansible/latest/installation_guide/intro_installation.html).
+
+```bash
 
 ## Setup
 
@@ -22,10 +28,15 @@ If you do not have a clean Ubuntu machine, you can use docker standalone setup.
 # Create project on GitLab and get new project token with API access and reporter permissions
 # Update the inventory file with the scanner machine IP
 nano inventory.yml  # Edit and save
+# Change IP address in the inventory file to the IP of the machine where you want to deploy the scanner
+
 # Configure the environment file
 nano vulnman.env  # Edit and save
+# Change TARGET to the domain you want to scan and GL_TOKEN to the GitLab project token
+
 # Review the configuration file
 nano nuclei_orchestrator_configs/scheduled-config.toml  # Edit and save
+# Change the config file to your needs, for example, set project id so tool can upload results to GitLab
 
 # Run the Ansible playbook to deploy everything
 ansible-playbook -i inventory.yml playbooks/deploy-all.yml # -kK for password prompt
@@ -47,9 +58,15 @@ sudo systemctl start nuclei-scheduled.service
 # Check the status of the scanning service
 # sudo journalctl -u nuclei-scheduled.service --follow
 
-# View scan results in the database
-psql -U postgres -h localhost -d scan-db -c "SELECT * FROM findings"
+# Visit Gitlab to see the results
 ```
+
+## Continuous scanning
+
+To enable periodic scanning, (optionally reconfigure) and enable following systemd timers:
+- `sudo systemctl enable domain_discovery.timer`
+- `sudo systemctl enable nuclei-scheduled.timer`
+
 
 ## Setup docker
 
@@ -63,9 +80,12 @@ docker compose -f /opt/postgres_db/postgres.compose.yml up -d
 # Run the domain discovery
 docker compose -f domain_discovery.compose.yml --env-file vulnman.env up 
 
+# Wait for domain discovery to finish and then run the nuclei orchestrator
 # Run the nuclei orchestrator
 docker compose -f nuclei_orchestrator.compose.yml --env-file vulnman.env up
+# This will run the nuclei orchestrator with default CONFIG_FILE.
 
+# To see results, visit GitLab
 # Now to setup continuous scanning, create either a systemd timer or a cron job to run domain_discovery and nuclei-scheduled periodically
 ```
 
@@ -81,14 +101,6 @@ poetry run nuclei-scan-runner -h
 # domain_discovery
 docker run -it vulnman/domain-discovery poetry run python src/main.py --help
 ```
-
-
-
-## Continuous scanning
-
-To enable periodic scanning, (optionally reconfigure) and enable following systemd timers:
-- `sudo systemctl enable domain_discovery.timer`
-- `sudo systemctl enable nuclei-scheduled.timer`
 
 ## Additional information
 
