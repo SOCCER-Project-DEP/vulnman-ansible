@@ -1,0 +1,18 @@
+services:
+  postgres_db:
+    image: postgres:latest
+    container_name: postgres_db
+    volumes:
+      - .vulnman_data/postgres_data:/var/lib/postgresql/
+    ports:
+      - "127.0.0.1:5432:5432"
+    restart: always
+    networks:
+      - scan_network
+    env_file:
+      - ./vulnman.env
+
+networks:
+  scan_network: 
+    name: scan_network
+    driver: bridge

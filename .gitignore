@@ -16,3 +16,4 @@ vagrant_hyperv/vagrant-ssh-config
 **/vagrant-shared/
 *.box
 .ansible
+.vulnman_data

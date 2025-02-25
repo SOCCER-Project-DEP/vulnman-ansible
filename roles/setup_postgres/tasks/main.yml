@@ -1,0 +1,24 @@
+- name: Create directory for postgres_db
+  ansible.builtin.file:
+    path: /opt/postgres_db
+    state: directory
+    mode: "0755"
+    owner: root
+    group: root
+
+- name: Copy dd files
+  ansible.builtin.copy:
+    src: ../../../{{ item }}
+    dest: /opt/postgres_db/{{ item }}
+    mode: "0644"
+    owner: root
+    group: root
+  with_items:
+    - postgres.compose.yml
+    - vulnman.env
+
+- name: Run docker compose
+  ansible.builtin.command:
+    cmd: "docker compose -f /opt/postgres_db/postgres.compose.yml up -d"
+  tags:
+    - skip_ansible_lint

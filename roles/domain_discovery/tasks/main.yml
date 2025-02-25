@@ -1,12 +1,64 @@
----
-- name: Install tools
-  ansible.builtin.import_tasks: tool_setup.yml
+- name: Create directory for domain_discovery
+  ansible.builtin.file:
+    path: /opt/domain_discovery
+    state: directory
+    mode: "0755"
+    owner: root
+    group: root
 
-- name: Prepare machine
-  ansible.builtin.import_tasks: prepare_dependancies.yml
+- name: Copy dd files
+  ansible.builtin.copy:
+    src: ../../../{{ item }}
+    dest: /opt/domain_discovery/{{ item }}
+    mode: "0644"
+    owner: root
+    group: root
+  with_items:
+    - domain_discovery.compose.yml
+    - vulnman.env
 
-- name: Setup database
-  ansible.builtin.import_tasks: database_setup.yml
+- name: Copy service template
+  ansible.builtin.template:
+    src: domain_discovery.service.j2
+    dest: /etc/systemd/system/domain_discovery.service
+    mode: "0644"
+    owner: root
+    group: root
 
-- name: Setup credentials
-  ansible.builtin.import_tasks: credentials_setup.yml
+- name: Copy service timer template
+  ansible.builtin.template:
+    src: domain_discovery.timer.j2
+    dest: /etc/systemd/system/domain_discovery.timer
+    mode: "0644"
+    owner: root
+    group: root
+
+- name: Reload systemd
+  ansible.builtin.systemd:
+    daemon_reload: true
+  tags:
+    - skip_ansible_lint
+
+- name: Copy dd2-start script
+  ansible.builtin.template:
+    src: domain_discovery_start.sh.j2
+    dest: /usr/bin/domain_discovery_start
+    mode: "0755"
+    owner: root
+    group: root
+
+- name: Create .vulnman_data directory
+  ansible.builtin.file:
+    path: /opt/domain_discovery/.vulnman_data
+    state: directory
+    mode: "0755"
+    owner: root
+    group: root
+
+- name: Create .vulnman_data/stats.json
+  ansible.builtin.file:
+    path: /opt/domain_discovery/.vulnman_data/stats.json
+    state: touch
+    mode: "0644"
+    owner: root
+    group: root

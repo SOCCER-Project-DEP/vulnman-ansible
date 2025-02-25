@@ -4,7 +4,8 @@
   become: true
   vars:
   roles:
-    - common_setup
-    - prod_database
+    - vulnman_common_setup
+    - install_docker
+    - setup_postgres
     - domain_discovery
     - nuclei_scanner

@@ -13,7 +13,13 @@ onexit() {
 }
 
 load_stats() {
-    stats_file="/opt/dd/stats.json"
+    stats_file="/opt/domain_discovery/.vulnman_data/stats.json"
+    # check if the file exists
+    if [ ! -f $stats_file ]; then
+        echo "Could not find stats.json"
+        return
+    fi
+
     old_domain_count=$(jq -r '.old_domains' $stats_file)
     new_domain_count=$(jq -r '.new_domains' $stats_file)
 
@@ -23,19 +29,8 @@ load_stats() {
 
 trap onexit EXIT
 
-cd /opt/dd
-
-# Virtual environment
-python3 -m venv venv
-source venv/bin/activate
-
-# Setup is dependent on these packages
-pip install poetry click
-
-# Run prescan (poetry independent)
-python3 dd.py --prescan
-
-# Run scan (poetry dependent)
-poetry run python dd.py --scan --target={{ domain_discovery_target }}
+cd /opt/domain_discovery
+sudo docker compose -f domain_discovery.compose.yml --env-file vulnman.env pull
+sudo docker compose -f domain_discovery.compose.yml --env-file  vulnman.env up 
 
 send-notification "**Domain Discovery**" "**Success** ✨ | $(load_stats)"

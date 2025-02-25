@@ -1,8 +1,0 @@
----
-nuclei_scanner_go_packages_path: /home/{{ nuclei_scanner_nonroot_user }}/go/bin
-nuclei_scanner_nonroot_user: ubuntu
-nuclei_scanner_gl_token: None
-nuclei_scanner_db_connection_string: "postgresql://postgres:{{ db_pass }}@localhost:5432/scan-db"
-nuclei_scanner_target_limit: 10
-nuclei_scanner_nuclei_git_branch: main
-nuclei_scanner_start_nuclei: false

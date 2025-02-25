@@ -1,8 +1,0 @@
----
-- name: Copy Logrotate config
-  ansible.builtin.template:
-    src: nuclei-logrotate.j2
-    dest: /etc/logrotate.d/nuclei
-    owner: root
-    group: root
-    mode: g=r,o=r

@@ -1,17 +1,42 @@
 ---
-- name: Prepare machine
-  ansible.builtin.import_tasks: prepare.yml
-
-- name: Install nuclei
-  ansible.builtin.import_tasks: install_nuclei.yml
-
-- name: Setup credentials
-  ansible.builtin.import_tasks: credentials_setup.yml
-
 - name: Setup SystemD service
   tags:
     - nuclei_systemd
   ansible.builtin.import_tasks: systemd.yml
 
-- name: Setup Logrotate config
-  ansible.builtin.import_tasks: logrotate.yml
+- name: Copy files
+  ansible.builtin.copy:
+    src: "../../../{{ item }}"
+    dest: /opt/nuclei_orchestrator/
+    mode: "0644"
+    owner: root
+    group: root
+  with_items:
+    - nuclei_orchestrator.compose.yml
+    - vulnman.env
+
+- name: Create directory for nuclei-orchestrator configs
+  ansible.builtin.file:
+    path: /opt/nuclei_orchestrator/nuclei_orchestrator_configs
+    state: directory
+    mode: "0755"
+    owner: root
+    group: root
+
+- name: Copy files
+  ansible.builtin.copy:
+    src: "../../../{{ item }}/"
+    dest: /opt/nuclei_orchestrator/nuclei_orchestrator_configs/
+    mode: "0644"
+    owner: root
+    group: root
+  with_items:
+    - nuclei_orchestrator_configs/
+
+- name: Copy nuclei_orchestrator script
+  ansible.builtin.template:
+    src: nuclei_orchestrator_start.sh.j2
+    dest: /usr/bin/nuclei_orchestrator_start
+    mode: "0755"
+    owner: root
+    group: root

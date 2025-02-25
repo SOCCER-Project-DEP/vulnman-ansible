@@ -1,3 +1,0 @@
----
-- name: Install common packages
-  ansible.builtin.import_tasks: common_packages.yml

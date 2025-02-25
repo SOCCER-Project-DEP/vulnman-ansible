@@ -1,0 +1,23 @@
+services:
+  nuclei_orchestrator:
+    image: vulnman/nuclei-orchestrator:latest
+    container_name: nuclei_orchestrator
+    entrypoint: poetry run nuclei-scan-runner --config /vulnman-nuclei-orchestrator/configs_new/${CONFIG_FILE}
+    volumes:
+      - .vulnman_data/nuclei_orchestrator_logs/logs:/var/log/vulnman_nuclei/logs
+      - .vulnman_data/nuclei_orchestrator_logs/results:/var/log/vulnman_nuclei/results
+      - .vulnman_data/nuclei_orchestrator_logs/results/scheduled:/var/log/vulnman_nuclei/results/scheduled
+      - .vulnman_data/nuclei_orchestrator_logs/results/testing:/var/log/vulnman_nuclei/results/testing
+      - .vulnman_data/nuclei_orchestrator_logs/results/latest:/var/log/vulnman_nuclei/results/latest
+      - .vulnman_data/nuclei_orchestrator_logs/results/adhoc:/var/log/vulnman_nuclei/results/adhoc
+      - ./nuclei_orchestrator_configs:/vulnman-nuclei-orchestrator/configs_new
+    networks:
+      - scan_network
+    env_file:
+      - vulnman.env
+
+networks:
+  scan_network:
+    name: scan_network
+    driver: bridge
+    external: true
