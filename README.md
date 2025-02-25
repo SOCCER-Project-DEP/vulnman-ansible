@@ -20,7 +20,6 @@ But it is useful for trying out the tool.
 
 Furthermore, you need to have [Ansible](https://docs.ansible.com/ansible/latest/installation_guide/intro_installation.html).
 
-```bash
 
 ## Setup
 
